@@ -8,3 +8,8 @@ class RecipeModel(BaseModel):
     name: str
     ingredients: List[str] = Field(..., min_length=1)
     steps: List[str] = Field(..., min_length=1)
+    error: bool
+
+class GenerationErrorModel(BaseModel):
+    message: str
+    error: bool
