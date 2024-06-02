@@ -10,5 +10,5 @@ security = HTTPBearer()
 
 
 def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(security)]):
-    decoded_token: dict = auth.verify_id_token(token)
+    decoded_token: dict = auth.verify_id_token(token.credentials)
     return DecodedIdToken(**decoded_token)
