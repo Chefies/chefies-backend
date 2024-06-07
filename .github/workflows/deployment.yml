@@ -14,8 +14,10 @@ jobs:
       - name: Build Docker Image
         run: |
           mkdir ./keys
+          ls
           echo '${{ secrets.CREDENTIALS }}' > ./keys/credentials.json
           cat ./keys/credentials.json
+          ls
       # - name: Checkout
       #   uses: actions/checkout@v3
       # - name: Build Docker Image
