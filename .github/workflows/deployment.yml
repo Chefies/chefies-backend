@@ -15,34 +15,30 @@ jobs:
         run: |
           mkdir ./keys
           echo '${{ secrets.CREDENTIALS }}' > ./keys/credentials.json
-          CHARACTER_COUNT=$(wc -c < ./keys/credentials.json)
-          echo "Character count: $CHARACTER_COUNT"
-      # - name: Checkout
-      #   uses: actions/checkout@v3
-      # - name: Build Docker Image
-      #   run: |
-      #     docker build -t karirku-backend .
-      # - name: Save Docker Image as TAR File
-      #   run: |
-      #     docker save -o karirku-backend.tar karirku-backend
-      # - name: Send TAR File to Server
-      #   uses: appleboy/scp-action@v0.1.4
-      #   with:
-      #     host: ${{ secrets.DEPLOYMENT_HOST }}
-      #     username: ${{ secrets.DEPLOYMENT_HOST_USERNAME }}
-      #     key: ${{ secrets.DEPLOYMENT_HOST_KEY }}
-      #     port: 22
-      #     source: karirku-backend.tar
-      #     target: images/
-      # - name: Run Docker Image
-      #   uses: appleboy/ssh-action@v0.1.10
-      #   with:
-      #     host: ${{ secrets.DEPLOYMENT_HOST }}
-      #     username: ${{ secrets.DEPLOYMENT_HOST_USERNAME }}
-      #     key: ${{ secrets.DEPLOYMENT_HOST_KEY }}
-      #     port: 22
-      #     script: |
-      #       docker container rm -f karirku-backend
-      #       docker image rm -f karirku-backend
-      #       docker load -i images/karirku-backend.tar
-      #       docker run --name karirku-backend -d --restart always -p 8000:8000 karirku-backend
+      - name: Build Docker Image
+        run: |
+          docker build -t chefies-backend .
+      - name: Save Docker Image as TAR File
+        run: |
+          docker save -o chefies-backend.tar chefies-backend
+      - name: Send TAR File to Server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.DEPLOYMENT_HOST }}
+          username: ${{ secrets.DEPLOYMENT_HOST_USERNAME }}
+          key: ${{ secrets.DEPLOYMENT_HOST_KEY }}
+          port: 22
+          source: chefies-backend.tar
+          target: images/
+      - name: Run Docker Image
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.DEPLOYMENT_HOST }}
+          username: ${{ secrets.DEPLOYMENT_HOST_USERNAME }}
+          key: ${{ secrets.DEPLOYMENT_HOST_KEY }}
+          port: 22
+          script: |
+            docker container rm -f chefies-backend
+            docker image rm -f chefies-backend
+            docker load -i images/chefies-backend.tar
+            docker run --name chefies-backend -e SERVICE_ACCOUNT_PATH="./keys/credentials.json" -d --restart always -p 8000:8000 chefies-backend
