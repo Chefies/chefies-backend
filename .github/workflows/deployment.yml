@@ -15,8 +15,8 @@ jobs:
         run: |
           mkdir ./keys
           echo '${{ secrets.CREDENTIALS }}' > ./keys/credentials.json
-      - name: Build Docker Image
-        run: |
+          ls
+          ls ./keys
           docker build -t chefies-backend .
       - name: Save Docker Image as TAR File
         run: |
