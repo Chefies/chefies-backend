@@ -37,4 +37,5 @@ RUN pip3 install --no-cache-dir --upgrade pip
 RUN poetry install
 
 COPY ./cefies /app/cefies
+COPY ./keys /app/keys
 CMD ["fastapi", "run", "cefies/app.py", "--port", "80"]
