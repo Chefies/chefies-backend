@@ -1,6 +1,7 @@
-from typing import Optional
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from pydantic import ValidationError
 
+from cefies.models.forms.auth import RegisterForm
 from cefies.models.auth import LoginData, RegisterData, Token
 from cefies.models.db.user import User
 from cefies.models.response import MessageResponse
@@ -25,9 +26,16 @@ async def login(data: LoginData):
 
 
 @router.post("/register")
-def register(data: RegisterData):
+def register(data: RegisterForm = Depends()):
+    try:
+        data = RegisterData(**data.to_dict())
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=e.errors(),
+        )
+    
     existing_user = User.collection.filter(email=data.email).get()
-    print(existing_user)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
