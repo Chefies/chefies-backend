@@ -5,7 +5,8 @@ from cefies.models.forms.auth import RegisterForm
 from cefies.models.auth import LoginData, RegisterData, Token
 from cefies.models.db.user import User
 from cefies.models.response import MessageResponse
-from cefies.security import authenticate_user, create_access_token, get_password_hash
+from cefies.security import authenticate_user, create_access_token, get_password_hash, get_hash_sha256
+from cefies.internal import bucket
 
 
 router = APIRouter(prefix="/auth")
@@ -26,9 +27,11 @@ async def login(data: LoginData):
 
 
 @router.post("/register")
-def register(data: RegisterForm = Depends()):
+async def register(form: RegisterForm = Depends()):
     try:
-        data = RegisterData(**data.to_dict())
+        data_dict = form.to_dict()
+        data_dict.pop("avatar", None)
+        data = RegisterData(**data_dict)
     except ValidationError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -46,8 +49,9 @@ def register(data: RegisterForm = Depends()):
     new_user.email = data.email
     new_user.name = data.name
     new_user.password = get_password_hash(data.password)
-    # TODO: Upload file to object and set avatar
-    new_user.avatar = ""
+    avatar_content = await form.avatar.read()
+    avatar_url = bucket.upload_file(avatar_content, get_hash_sha256(avatar_content))
+    new_user.avatar = avatar_url
     new_user.save()
 
     return MessageResponse(

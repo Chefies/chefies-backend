@@ -3,6 +3,7 @@ from typing import Annotated, cast
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import bcrypt
+import hashlib
 
 from cefies.models.db.user import User
 from datetime import datetime, timedelta, timezone
@@ -41,6 +42,10 @@ def create_access_token(user_id: str, expires_delta: timedelta = timedelta(minut
 
 def get_password_hash(password: str):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+
+def get_hash_sha256(content: bytes):
+    return hashlib.sha256(content).hexdigest()
 
 
 def get_current_user(token: Annotated[str, Depends(security)]):
