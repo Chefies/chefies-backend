@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import ValidationError
 
@@ -28,6 +29,8 @@ async def login(data: LoginData):
 
 @router.post("/register")
 async def register(form: RegisterForm = Depends()):
+    loop = asyncio.get_running_loop()
+    
     try:
         data_dict = form.to_dict()
         data_dict.pop("avatar", None)
@@ -50,7 +53,10 @@ async def register(form: RegisterForm = Depends()):
     new_user.name = data.name
     new_user.password = get_password_hash(data.password)
     avatar_content = await form.avatar.read()
-    avatar_url = bucket.upload_file(avatar_content, get_hash_sha256(avatar_content))
+    avatar_url = await loop.run_in_executor(
+        None,
+        lambda: bucket.upload_file(avatar_content, get_hash_sha256(avatar_content))
+    )
     new_user.avatar = avatar_url
     new_user.save()
 
