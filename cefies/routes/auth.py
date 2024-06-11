@@ -1,13 +1,9 @@
-import asyncio
-from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import ValidationError
+from fastapi import APIRouter, HTTPException, status
 
-from cefies.models.forms.auth import RegisterForm
 from cefies.models.auth import LoginData, RegisterData, Token
 from cefies.models.db.user import User
 from cefies.models.response import MessageResponse
-from cefies.security import authenticate_user, create_access_token, get_password_hash, get_hash_sha256
-from cefies.internal import bucket
+from cefies.security import authenticate_user, create_access_token, get_password_hash
 
 
 router = APIRouter(prefix="/auth")
@@ -28,19 +24,7 @@ async def login(data: LoginData):
 
 
 @router.post("/register")
-async def register(form: RegisterForm = Depends()):
-    loop = asyncio.get_running_loop()
-    
-    try:
-        data_dict = form.to_dict()
-        data_dict.pop("avatar", None)
-        data = RegisterData(**data_dict)
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=e.errors(),
-        )
-    
+def register(data: RegisterData):
     existing_user = User.collection.filter(email=data.email).get()
     if existing_user:
         raise HTTPException(
@@ -52,12 +36,7 @@ async def register(form: RegisterForm = Depends()):
     new_user.email = data.email
     new_user.name = data.name
     new_user.password = get_password_hash(data.password)
-    avatar_content = await form.avatar.read()
-    avatar_url = await loop.run_in_executor(
-        None,
-        lambda: bucket.upload_file(avatar_content, get_hash_sha256(avatar_content))
-    )
-    new_user.avatar = avatar_url
+    new_user.avatar = ""
     new_user.save()
 
     return MessageResponse(
