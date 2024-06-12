@@ -22,8 +22,7 @@ def generate_recipes(
 ):
     ingredients = request_body.ingredients
     topic = request_body.topic
-    lang = request_body.lang
-    recipe = generate_recipe(ingredients, topic, lang)
+    recipe = generate_recipe(ingredients, topic)
     if recipe:
         return JSONResponse(content=recipe.model_dump(), status_code=201)
     else:
