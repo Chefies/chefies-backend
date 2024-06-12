@@ -17,16 +17,17 @@ router = APIRouter(prefix="/profile")
 @router.get("/")
 def get_profile(
     user: Annotated[User, Depends(get_current_user)],
-):
+) -> ProfileData:
     return ProfileData(**user.to_dict())
+
 
 @router.put("/")
 async def edit_profile(
     user: Annotated[User, Depends(get_current_user)],
-    form: EditProfileForm = Depends()
-):
+    form: EditProfileForm = Depends(),
+) -> MessageResponse:
     loop = asyncio.get_running_loop()
-    
+
     try:
         data_dict = form.to_dict()
         data_dict.pop("avatar", None)
@@ -36,12 +37,12 @@ async def edit_profile(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=e.errors(),
         )
-    
+
     user.name = data.name
     avatar_content = await form.avatar.read()
     avatar_url = await loop.run_in_executor(
         None,
-        lambda: bucket.upload_file(avatar_content, get_hash_sha256(avatar_content))
+        lambda: bucket.upload_file(avatar_content, get_hash_sha256(avatar_content)),
     )
     user.avatar = avatar_url
     user.save()
@@ -51,11 +52,12 @@ async def edit_profile(
         message="Successfully registered",
     )
 
+
 @router.patch("/password")
 def change_password(
     user: Annotated[User, Depends(get_current_user)],
     data: ChangePasswordData,
-):
+) -> MessageResponse:
     user.password = get_password_hash(data.password)
     user.save()
-    return JSONResponse(content={"detail": "password changed"}, status_code=200)
+    return MessageResponse(error=False, message="Password changed")

@@ -10,7 +10,7 @@ router = APIRouter(prefix="/auth")
 
 
 @router.post("/login")
-async def login(data: LoginData):
+async def login(data: LoginData) -> Token:
     user = authenticate_user(data.email, data.password)
     if not user:
         raise HTTPException(
@@ -24,7 +24,7 @@ async def login(data: LoginData):
 
 
 @router.post("/register")
-def register(data: RegisterData):
+def register(data: RegisterData) -> MessageResponse:
     existing_user = User.collection.filter(email=data.email).get()
     if existing_user:
         raise HTTPException(
