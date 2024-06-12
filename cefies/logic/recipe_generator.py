@@ -1,6 +1,7 @@
 from cefies.internal.gemini import llm
 from cefies.models.generate import RecipeModel, GenerationErrorModel
 
+DEFAULT_INGREDIENTS = ["Water", "Oil", "Rice", "Salt", "Sugar", "Pepper"]
 RECIPE_GENERATION_SYSTEM_TEMPLATE = """
 Generate a recipe containing name, ingredients, and steps in JSON format from subset of given ingredients.
 If it is impossible to create one, tell us the reason in JSON format (see below), but you are expected
@@ -16,11 +17,12 @@ Failed Format:
 {"error": true, "message": str}
 
 Note: For steps, don't give numbering or endline
-
-Ingredient List:
 """
 
 def generate_recipe(ingredients: list[str], topic: str, lang: str):
+    input_ingredients = DEFAULT_INGREDIENTS.copy()
+    input_ingredients.extend(ingredients)
+    
     system_prompt = RECIPE_GENERATION_SYSTEM_TEMPLATE.replace("{{LANG}}", lang)
     system_prompt = system_prompt.replace("{{TOPIC}}", topic)
     user_prompt = "Ingredients List: " + ", ".join(ingredients)
