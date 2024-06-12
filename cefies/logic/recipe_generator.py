@@ -7,9 +7,9 @@ Generate a recipe containing name, ingredients, and steps in JSON format from su
 If it is impossible to create one, tell us the reason in JSON format (see below), but you are expected
 to make creative recipe with limited ingredients. Minimal recipe with small number of ingredients is okay,
 just create minimal recipe in it, you don't need to create perfect recipe. I'm asking for recipe, not code
-to make it happen. The steps need to be detailed. The topic of the recipe is about {{TOPIC}}. Also, you need
-to give the recipes in these languages (the naming is strict): {{LANGS}}. You must give me the recipe in ALL
-of those languages, not only some of it. You are not allowed to answer anything other than in this format:
+to make it happen. The steps need to be detailed. The topic and the ingredients of the recipe will be given.
+Also, you need to give the recipes in these languages (the naming is strict): {{LANGS}}. You must give me the
+recipe in ALL of those languages, not only some of it. You are not allowed to answer anything other than in this format:
 
 Success Format:
 {"error": false, "recipes": {"name": str, "ingredients": list[str], "steps": list[str], "lang": {{LANGS}} }}
@@ -27,8 +27,8 @@ def generate_recipe(ingredients: list[str], topic: str):
     input_ingredients.extend(ingredients)
     
     system_prompt = RECIPE_GENERATION_SYSTEM_TEMPLATE.replace("{{LANGS}}", lang_list)
-    system_prompt = system_prompt.replace("{{TOPIC}}", topic)
-    user_prompt = "Ingredients List: " + ", ".join(ingredients)
+    user_prompt = f"Topic: {topic}\n"
+    user_prompt += "Ingredients List: " + ", ".join(ingredients)
     
     messages = [
         {
