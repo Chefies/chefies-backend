@@ -1,7 +1,7 @@
 from cefies.internal.gemini import llm
 from cefies.models.generate import RecipeModel, GenerationErrorModel
 
-RECIPE_GENERATION_TEMPLATE = """
+RECIPE_GENERATION_SYSTEM_TEMPLATE = """
 Generate a recipe containing name, ingredients, and steps in JSON format from subset of given ingredients.
 If it is impossible to create one, tell us the reason in JSON format (see below), but you are expected
 to make creative recipe with limited ingredients. Minimal recipe with small number of ingredients is okay,
@@ -21,11 +21,21 @@ Ingredient List:
 """
 
 def generate_recipe(ingredients: list[str], topic: str, lang: str):
-    ingredient_contents = "\n- " + "\n- ".join(ingredients)
-    contents = RECIPE_GENERATION_TEMPLATE.replace("{{LANG}}", lang)
-    contents = contents.replace("{{TOPIC}}", topic)
-    contents = contents + ingredient_contents
-    response_raw = llm.generate_content(contents).text
+    system_prompt = RECIPE_GENERATION_SYSTEM_TEMPLATE.replace("{{LANG}}", lang)
+    system_prompt = system_prompt.replace("{{TOPIC}}", topic)
+    user_prompt = "Ingredients List: " + ", ".join(ingredients)
+    
+    messages = [
+        {
+            "role": "model",
+            "parts": [system_prompt],
+        },
+        {
+            "role": "user",
+            "parts": [user_prompt],
+        }
+    ]
+    response_raw = llm.generate_content(messages).text
     
     try:
         response = RecipeModel.model_validate_json(response_raw)
