@@ -27,8 +27,9 @@ def generate_recipes(
 ):
     ingredients = request_body.ingredients
     topic = request_body.topic
-    recipe = generate_recipe(ingredients, topic)
-    if recipe:
+    banned_recipes = request_body.banned_recipes
+    recipe = generate_recipe(ingredients, topic, banned_recipes)
+    if isinstance(recipe, RecipeListModel):
         return recipe
 
     if isinstance(recipe, GenerationErrorModel):
@@ -38,5 +39,5 @@ def generate_recipes(
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=MessageResponse(error=True, message=message),
+        content=MessageResponse(error=True, message=message).model_dump(),
     )
