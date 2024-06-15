@@ -9,7 +9,8 @@ class ProfileData(BaseModel):
 
 
 class ChangePasswordData(BaseModel):
-    password: Annotated[str, StringConstraints(min_length=8)]
+    new_password: Annotated[str, StringConstraints(min_length=8)]
+    old_password: Annotated[str, StringConstraints(min_length=8)]
 
 
 class EditProfileData(BaseModel):

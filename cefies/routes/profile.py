@@ -1,14 +1,13 @@
 import asyncio
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from cefies.models.db.user import User
 from cefies.models.forms.profile import EditProfileForm
 from cefies.models.profile import ProfileData, ChangePasswordData, EditProfileData
 from cefies.models.response import MessageResponse
-from cefies.security import get_current_user, get_password_hash, get_hash_sha256
+from cefies.security import get_current_user, get_password_hash, get_hash_sha256, verify_password
 from cefies.internal import bucket
 
 router = APIRouter(prefix="/profile")
@@ -58,6 +57,12 @@ def change_password(
     user: Annotated[User, Depends(get_current_user)],
     data: ChangePasswordData,
 ) -> MessageResponse:
-    user.password = get_password_hash(data.password)
+    if not verify_password(data.old_password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid old password",
+        )
+    
+    user.password = get_password_hash(data.new_password)
     user.save()
     return MessageResponse(error=False, message="Password changed")
