@@ -24,11 +24,18 @@ class RecipeListModel(BaseModel):
     @field_validator('recipes')
     @classmethod
     def check_langs(cls, recipes: List[RecipeModel]):
-        lang_set = set([recipe.lang for recipe in recipes])
-        required_set = set([lang.value for lang in LangEnum])
+        lang_list = [recipe.lang for recipe in recipes]
+        required_list = [lang.value for lang in LangEnum]
+        
+        lang_set = set(lang_list)
+        required_set = set(required_list)
         intersect = lang_set.intersection(required_set)
+        
         if len(intersect) != len(required_set):
             raise ValueError('required language not available')
+        if len(lang_set) < len(lang_list):
+            raise ValueError('duplicate recipes in single language')
+        
         return recipes
 
 class GenerationErrorModel(BaseModel):
