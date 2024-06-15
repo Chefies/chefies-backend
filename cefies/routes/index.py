@@ -27,7 +27,8 @@ def generate_recipes(
 ):
     ingredients = request_body.ingredients
     topic = request_body.topic
-    recipe = generate_recipe(ingredients, topic)
+    banned_recipes = request_body.banned_recipes
+    recipe = generate_recipe(ingredients, topic, banned_recipes)
     if recipe:
         return recipe
 
