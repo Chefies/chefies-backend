@@ -27,6 +27,10 @@ def authenticate_user(email: str, password: str):
     return cast(User, user)
 
 
+def verify_password(password: str, hashed_password: str):
+    return bcrypt.checkpw(password.encode(), hashed_password.encode())
+
+
 def create_access_token(user_id: str, expires_delta: timedelta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
     expire = datetime.now(timezone.utc) + expires_delta
     encoded_jwt = jwt.encode(
