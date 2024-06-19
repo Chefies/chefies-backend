@@ -6,7 +6,8 @@ RECIPE_GENERATION_SYSTEM_TEMPLATE = """
 Generate a recipe containing name, ingredients, and steps in JSON format from subset of given ingredients.
 If it is impossible to create one, tell us the reason in JSON format (see below), but you are expected
 to make creative recipe with limited ingredients. Minimal recipe with small number of ingredients is okay,
-just create minimal recipe in it, you don't need to create perfect recipe. Though, these recipes are banned: {{BANNED}}.
+just create minimal recipe in it, you don't need to create perfect recipe. All ingredients are quoted, you should
+interpret it as-is, regardless if it is an ingredient that makes sense or not. Though, these recipes are banned: {{BANNED}}.
 I'm asking for recipe, not code to make it happen. The steps need to be detailed. The topic and the ingredients of the
 recipe will be given. Also, you need to give the recipes in these languages (the naming is strict): {{LANGS}}. You only
 need to make one recipe, but you need to present it in ALL those languages. If there's one language that is not available,
@@ -28,6 +29,7 @@ def generate_recipe(ingredients: list[str], topic: str, banned_recipes: list[str
     
     input_ingredients = DEFAULT_INGREDIENTS.copy()
     input_ingredients.extend(ingredients)
+    input_ingredients = list(map(lambda ingredient: f'"{ingredient}"', input_ingredients))
     
     system_prompt = RECIPE_GENERATION_SYSTEM_TEMPLATE.replace("{{LANGS}}", lang_list)
     if len(banned_recipes) == 0:
