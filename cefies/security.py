@@ -13,7 +13,11 @@ SECRET_KEY = os.getenv("SECRET_KEY", "insecurekey000000000000000000000")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-security = OAuth2PasswordBearer("/auth/login")
+login_path = "/auth/login"
+if os.getenv("PRODUCTION"):
+    login_path = "/api" + login_path
+
+security = OAuth2PasswordBearer(login_path)
 
 
 def authenticate_user(email: str, password: str):
