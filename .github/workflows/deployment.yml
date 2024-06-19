@@ -8,28 +8,34 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: Deploy
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: "Authenticate Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: "Docker auth"
+        run: |-
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
       - name: Build Docker Image
         run: |
           mkdir ./keys
           echo '${{ secrets.CREDENTIALS }}' > ./keys/credentials.json
           ls
           ls ./keys
-          docker build -t chefies-backend .
-      - name: Save Docker Image as TAR File
-        run: |
-          docker save -o chefies-backend.tar chefies-backend
-      - name: Send TAR File to Server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.DEPLOYMENT_HOST }}
-          username: ${{ secrets.DEPLOYMENT_HOST_USERNAME }}
-          key: ${{ secrets.DEPLOYMENT_HOST_KEY }}
-          port: 22
-          source: chefies-backend.tar
-          target: images/
+          docker build --tag ${{ env.GAR_LOCATION }} .
+
+      - name: Push image
+        run: docker push ${{ env.GAR_LOCATION }}
+
       - name: Run Docker Image
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -40,5 +46,4 @@ jobs:
           script: |
             docker container rm -f chefies-backend
             docker image rm -f chefies-backend
-            docker load -i images/chefies-backend.tar
-            docker run --name chefies-backend -e GOOGLE_APPLICATION_CREDENTIALS="/app/keys/credentials.json" -d --restart always -p 9000:80 chefies-backend
+            docker run --name chefies-backend -e GOOGLE_APPLICATION_CREDENTIALS="/app/keys/credentials.json" -d --restart always -p 9000:80 ${{ env.GAR_LOCATION }}
