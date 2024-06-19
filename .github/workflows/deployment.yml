@@ -23,7 +23,7 @@ jobs:
 
       - name: "Docker auth"
         run: |-
-          gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       - name: Build Docker Image
         run: |
@@ -31,10 +31,10 @@ jobs:
           echo '${{ secrets.CREDENTIALS }}' > ./keys/credentials.json
           ls
           ls ./keys
-          docker build --tag $GAR_LOCATION .
+          docker build --tag ${{ env.GAR_LOCATION }} .
 
       - name: Push image
-        run: docker push $GAR_LOCATION
+        run: docker push ${{ env.GAR_LOCATION }}
 
       - name: Run Docker Image
         uses: appleboy/ssh-action@v0.1.10
@@ -46,4 +46,4 @@ jobs:
           script: |
             docker container rm -f chefies-backend
             docker image rm -f chefies-backend
-            docker run --name chefies-backend -e GOOGLE_APPLICATION_CREDENTIALS="/app/keys/credentials.json" -d --restart always -p 9000:80 $GAR_LOCATION
+            docker run --name chefies-backend -e GOOGLE_APPLICATION_CREDENTIALS="/app/keys/credentials.json" -d --restart always -p 9000:80 ${{ env.GAR_LOCATION }}
