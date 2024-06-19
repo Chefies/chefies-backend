@@ -31,7 +31,7 @@ jobs:
           echo '${{ secrets.CREDENTIALS }}' > ./keys/credentials.json
           ls
           ls ./keys
-          docker build --tag ${{ vars.GAR_LOCATION }} .
+          docker build --tag ${{ vars.GAR_LOCATION }}/backend .
 
       - name: Push image
         run: docker push ${{ vars.GAR_LOCATION }}
@@ -46,4 +46,4 @@ jobs:
           script: |
             docker container rm -f chefies-backend
             docker image rm -f chefies-backend
-            docker run --name chefies-backend -e GOOGLE_APPLICATION_CREDENTIALS="/app/keys/credentials.json" -d --restart always -p 9000:80 ${{ vars.GAR_LOCATION }}
+            docker run --name chefies-backend -e GOOGLE_APPLICATION_CREDENTIALS="/app/keys/credentials.json" -d --restart always -p 9000:80 ${{ vars.GAR_LOCATION }}/backend
