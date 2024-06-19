@@ -16,6 +16,7 @@ class RecipeModel(BaseModel):
     ingredients: List[str] = Field(..., min_length=1)
     steps: List[str] = Field(..., min_length=1)
     lang: LangEnum
+    facts: List[str] = Field(..., min_length=1)
     
 class RecipeListModel(BaseModel):
     error: bool

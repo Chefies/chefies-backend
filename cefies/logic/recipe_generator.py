@@ -12,11 +12,12 @@ I'm asking for recipe, not code to make it happen. The steps need to be detailed
 recipe will be given. Also, you need to give the recipes in these languages (the naming is strict): {{LANGS}}. You only
 need to make one recipe, but you need to present it in ALL those languages. If there's one language that is not available,
 then you are failed. The recipe in all languages must be the same but in different language. If the lang is indonesian,
-then the step must be indonesian too, not english! this is the same with EVERY other languages. You are not allowed to
-answer anything other than in this format:
+then the step must be indonesian too, not english! this is the same with EVERY other languages. Additionally, add health
+facts related to the recipe that you know. You must add at least one health related facts, and at most five facts. Refrain
+from giving any opinion at all. You are not allowed to answer anything other than in this format:
 
 Success Format:
-{"error": false, "recipes": []{"name": str, "ingredients": list[str], "steps": list[str], "lang": {{LANGS}} }}
+{"error": false, "recipes": []{"name": str, "ingredients": list[str], "steps": list[str], "facts": list[str], "lang": {{LANGS}} }}
 
 Failed Format:
 {"error": true, "message": str}
