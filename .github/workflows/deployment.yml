@@ -44,6 +44,7 @@ jobs:
           key: ${{ secrets.DEPLOYMENT_HOST_KEY }}
           port: 22
           script: |
+            gcloud auth configure-docker ${{ vars.REGION }}-docker.pkg.dev --quiet
             docker container rm -f chefies-backend
             docker image rm -f ${{ vars.GAR_LOCATION }}/backend
             docker run --name chefies-backend -e GOOGLE_APPLICATION_CREDENTIALS="/app/keys/credentials.json" -d --restart always -p 9000:80 ${{ vars.GAR_LOCATION }}/backend
