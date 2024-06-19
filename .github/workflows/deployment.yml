@@ -34,7 +34,7 @@ jobs:
           docker build --tag ${{ vars.GAR_LOCATION }}/backend .
 
       - name: Push image
-        run: docker push ${{ vars.GAR_LOCATION }}
+        run: docker push ${{ vars.GAR_LOCATION }}/backend
 
       - name: Run Docker Image
         uses: appleboy/ssh-action@v0.1.10
