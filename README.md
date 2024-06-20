@@ -17,9 +17,11 @@ poetry install
 This command will install required dependencies for running the backend application.
 
 ### Firebase Emulators
-This project requires several GCP technologies such as Cloud Storage and Cloud Firestore.
-You can use firebase emulators to run them in local. Follow this 
+This project requires several GCP technologies such as Cloud Storage, Cloud Firestore, and Gemini API.
+For Cloud Storage and Cloud Firestore, you can use firebase emulators to run them in local. Follow this 
 [firebase emulators installation guideline](https://firebase.google.com/docs/emulator-suite/install_and_configure).
+For Gemini API, you need to enable [Generative Language API](https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com)
+in your GCP project and get a service account key that is capable to use the API.
 
 To start the emulators, run the command below.
 ```
