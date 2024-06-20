@@ -8,7 +8,7 @@ class LangEnum(str, Enum):
 
 class RecipeGenerationModel(BaseModel):
     ingredients: List[str] = Field(..., min_length=1)
-    topic: Annotated[str, StringConstraints(min_length=1)] = 'cheap meals'
+    topic: Annotated[str, StringConstraints(min_length=1)] = 'healthy cheap meals'
     banned_recipes: List[str] = []
 
 class RecipeModel(BaseModel):

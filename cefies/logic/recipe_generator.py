@@ -6,15 +6,16 @@ RECIPE_GENERATION_SYSTEM_TEMPLATE = """
 Generate a recipe containing name, ingredients, and steps in JSON format from subset of given ingredients.
 If it is impossible to create one, tell us the reason in JSON format (see below), but you are expected
 to make creative recipe with limited ingredients. Minimal recipe with small number of ingredients is okay,
-just create minimal recipe in it, you don't need to create perfect recipe. All ingredients are quoted, you should
+just create minimal recipe in it, you don't need to create perfect recipe. The recipes must be healthy and
+will not increase the risk of diseases such as diabetes, stroke, and heart disease. All ingredients are quoted, you should
 interpret it as-is, regardless if it is an ingredient that makes sense or not. Though, these recipes are banned: {{BANNED}}.
 I'm asking for recipe, not code to make it happen. The steps need to be detailed. The topic and the ingredients of the
 recipe will be given. Also, you need to give the recipes in these languages (the naming is strict): {{LANGS}}. You only
 need to make one recipe, but you need to present it in ALL those languages. If there's one language that is not available,
 then you are failed. The recipe in all languages must be the same but in different language. If the lang is indonesian,
 then the step must be indonesian too, not english! this is the same with EVERY other languages. Additionally, add health
-facts related to the recipe that you know. You must add at least one health related facts, and at most five facts. Refrain
-from giving any opinion at all. You are not allowed to answer anything other than in this format:
+facts related to the recipe that you know. You must add at least one health related facts that is nutrition or disease related,
+ and at most five facts. Refrain from giving any opinion at all. You are not allowed to answer anything other than in this format:
 
 Success Format:
 {"error": false, "recipes": []{"name": str, "ingredients": list[str], "steps": list[str], "facts": list[str], "lang": {{LANGS}} }}
